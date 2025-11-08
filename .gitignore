@@ -1,0 +1,7 @@
+*node_modules
+.gitattributes
+.mvn
+mvnw
+mvnw.cmd
+dist
+.env
