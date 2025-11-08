@@ -30,13 +30,13 @@ export class MCPClient {
           parameters: tool.inputSchema as InputSchemaType,
         },
       }));
+      console.log(this.tools);
     } catch (e) {
       console.error('Failed to connect to MCP server:', e);
       throw e;
     }
   }
   async processQuery(query: string) {
-    console.log(this.tools);
     const messages = [
       {
         role: 'user',
@@ -69,7 +69,6 @@ export class MCPClient {
             model: 'llama3-groq-tool-use:8b',
             messages: messages,
           });
-          console.log(messages);
           return languageResponse?.message;
         }
       }
