@@ -58,7 +58,6 @@ export class MCPClient {
           const finalResponse = await this.mcp.callTool({
             ...call.function,
           });
-
           for (const responseContent of finalResponse.content) {
             messages.push({
               role: 'user',
