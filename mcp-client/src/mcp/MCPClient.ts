@@ -52,7 +52,7 @@ export class MCPClient {
     if (!this.ollamaModel) return;
     try {
       const response = await this.ollamaModel.chat({
-        model: 'mistral:latest',
+        model: 'qwen3:1.7b',
         messages: messages,
         tools: this.tools,
       });
@@ -77,13 +77,13 @@ export class MCPClient {
 
         messages.push({
           role: 'system',
-          content: `The schedule of Thodoris as csv format is this ${resourceResult.contents[0].text}`,
+          content: `The schedule of Thodoris as csv format is this use it to provide output to the user ${resourceResult.contents[0].text}`,
         });
       }
 
       console.log(messages);
       const languageResponse = await this.ollamaModel.chat({
-        model: 'mistral:latest',
+        model: 'qwen3:1.7b',
         messages: messages,
       });
       return languageResponse?.message;
