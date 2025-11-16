@@ -1,7 +1,9 @@
 *node_modules
 .gitattributes
 .mvn
+.idea
 mvnw
 mvnw.cmd
 dist
 .env
+target

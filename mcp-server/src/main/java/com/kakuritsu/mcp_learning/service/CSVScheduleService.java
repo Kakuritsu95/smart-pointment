@@ -31,7 +31,7 @@ public class CSVScheduleService implements ScheduleRepository {
 
     @Override
     public void save(ScheduleCommand command) throws Exception {
-       CSVSchedule schedule =  CSVSchedule.mapToCsvSchedule(command);
+        CSVSchedule schedule =  CSVSchedule.mapToCsvSchedule(command);
         ColumnPositionMappingStrategy<CSVSchedule> strategy = new ColumnPositionMappingStrategy<>();
         strategy.setType(CSVSchedule.class);
         strategy.setColumnMapping(new String[]{"date", "reason", "time"});

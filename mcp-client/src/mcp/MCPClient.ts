@@ -4,12 +4,14 @@ import { Ollama } from 'ollama';
 import { env } from '../env.js';
 import type { InputSchemaType } from '../types/mcp-client-types.js';
 import type { Tool } from 'ollama';
+import type { Resource } from '@modelcontextprotocol/sdk/types.js';
 
 export class MCPClient {
   mcp;
   ollamaModel: Ollama | null = null;
   transport: StreamableHTTPClientTransport | null = null;
   tools: Tool[] = [];
+  resources: Resource[] = [];
   constructor() {
     this.mcp = new Client({ name: 'mcp-client-cli', version: '1.0.0' });
   }
@@ -22,6 +24,8 @@ export class MCPClient {
       this.ollamaModel = new Ollama({ host: env.OLLAMA_URL });
       await this.mcp.connect(this.transport);
       const toolsResult = await this.mcp.listTools();
+      const resourcesResult = await this.mcp.listResources();
+      console.log(toolsResult.tools[0]?.inputSchema);
       this.tools = toolsResult.tools.map((tool) => ({
         type: 'function',
         function: {
@@ -30,7 +34,8 @@ export class MCPClient {
           parameters: tool.inputSchema as InputSchemaType,
         },
       }));
-      console.log(this.tools);
+      this.resources = resourcesResult.resources;
+      console.log([...this.tools, ...this.resources]);
     } catch (e) {
       console.error('Failed to connect to MCP server:', e);
       throw e;
@@ -47,7 +52,7 @@ export class MCPClient {
     if (!this.ollamaModel) return;
     try {
       const response = await this.ollamaModel.chat({
-        model: 'llama3-groq-tool-use:8b',
+        model: 'mistral:latest',
         messages: messages,
         tools: this.tools,
       });
@@ -60,17 +65,28 @@ export class MCPClient {
           });
           for (const responseContent of finalResponse.content) {
             messages.push({
-              role: 'user',
+              role: 'tool',
               content: responseContent.text,
             });
           }
-          const languageResponse = await this.ollamaModel.chat({
-            model: 'llama3-groq-tool-use:8b',
-            messages: messages,
-          });
-          return languageResponse?.message;
         }
+      } else {
+        const resourceResult = await this.mcp.readResource({
+          uri: this.resources[0]?.uri as string,
+        });
+
+        messages.push({
+          role: 'system',
+          content: `The schedule of Thodoris as csv format is this ${resourceResult.contents[0].text}`,
+        });
       }
+
+      console.log(messages);
+      const languageResponse = await this.ollamaModel.chat({
+        model: 'mistral:latest',
+        messages: messages,
+      });
+      return languageResponse?.message;
     } catch (e) {
       console.log(e);
     }

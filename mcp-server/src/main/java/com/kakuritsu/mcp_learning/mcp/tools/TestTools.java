@@ -16,12 +16,8 @@ public class TestTools {
     TestTools(ScheduleRepository repository){
         this.repository = repository;
     }
-    @Tool(description = "Retrieves schedule for monday for Thodoris")
-    public String retrieveMondaySchedule(){
-        return "Thodoris is very busy on mondays he has to wake up early and to voskisei ta provata";
-    }
 
-    @Tool(description = "Schedule an appointment with Thodoris for a specific date and time")
+    @Tool(description = "Schedule an appointment with Thodoris for a specific date, time and reason")
     public String doAppointment(
             @ToolParam(description = "The date of the appointment eg 2024-03-01") LocalDate appointmentDate,
             @ToolParam(description = "The time for the appointment in format HH:mm eg 14:50") LocalTime time,
